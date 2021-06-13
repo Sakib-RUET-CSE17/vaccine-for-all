@@ -1,0 +1,9 @@
+.container a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+.container li {
+    padding: 10px;
+}

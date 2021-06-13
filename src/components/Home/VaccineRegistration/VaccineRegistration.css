@@ -1,0 +1,19 @@
+.vaccine-registration {
+    background-image: url(../../../images/bg.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    height: 420px;
+    background-position: center center;
+}
+
+.vaccine-registration::before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: rgb(36, 41, 73);
+    opacity: .3;
+    top: 0;
+}
