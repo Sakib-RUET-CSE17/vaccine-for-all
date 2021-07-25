@@ -27,6 +27,14 @@ const OrderStatus = ({ order }) => {
             .then(result => {
                 if (result) {
                     setOrderStatus(status)
+                    if (status === 'done') {
+                        fetch('https://young-citadel-36577.herokuapp.com/updateServed/' + order.vaccineUpazillaRelationId, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                        })
+                            .then(res => res.json())
+                            .then(data => console.log(data))
+                    }
                 }
             })
 

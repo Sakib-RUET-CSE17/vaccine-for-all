@@ -1,34 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const VaccineCard = ({ vaccine }) => {
-    const { name, imageURL, price, ageDuration, _id } = vaccine
+const VaccineCard = ({ vaccineByUpazilla }) => {
+    const [vaccine, setVaccine] = useState({})
     const [edit, setEdit] = useState(false)
-    const [editedPrice, setEditedPrice] = useState(price)
+    const [editedStock, setEditedStock] = useState(vaccineByUpazilla.available)
+    const [editedPrice,setEditedPrice] = useState(0)
+
+    useEffect(() => {
+        fetch('https://young-citadel-36577.herokuapp.com/vaccine/' + vaccineByUpazilla.vaccine_id)
+            .then(res => res.json())
+            .then(data => {
+                const newVaccine = { ...vaccineByUpazilla, vaccine: data }
+                setVaccine(newVaccine)
+                setEditedPrice(data.price)
+            })
+        // console.log(vaccineByUpazilla)
+    }, [vaccineByUpazilla])
 
     const deleteVaccine = () => {
-        // console.log(id)
-        fetch(`https://young-citadel-36577.herokuapp.com/deleteVaccine/${_id}`, {
+        console.log(vaccine._id)
+        fetch(`https://young-citadel-36577.herokuapp.com/deleteVaccine/${vaccine._id}`, {
             method: 'DELETE',
         })
             .then(res => res.json())
             .then(data => {
                 // console.log(data)
-                document.getElementById(_id).innerHTML = ''
+                document.getElementById(vaccine._id).innerHTML = ''
             })
     }
 
     const editVaccine = () => {
         if (edit) {
-            const vaccinData = { price: editedPrice }
-            fetch(`https://young-citadel-36577.herokuapp.com/updateVaccine/${_id}`, {
+            const vaccineData = {available:editedStock }
+            fetch(`https://young-citadel-36577.herokuapp.com/addStock/${vaccine._id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(vaccinData)
+                body: JSON.stringify(vaccineData)
             })
                 .then(res => res.json())
                 .then(result => {
+                    console.log(result)
                     if (result) {
                         setEdit(false)
                     }
@@ -38,13 +51,14 @@ const VaccineCard = ({ vaccine }) => {
         else { setEdit(true) }
     }
     return (
-        <div id={_id} class="col">
+        <div id={vaccine._id} class="col">
             <div class="card h-100">
-                <img src={imageURL} class="card-img-top" alt="..." />
+                <img src={vaccine.vaccine?.imageURL} class="card-img-top" alt="..." />
                 <div class="card-body">
-                    <h5 class="card-title">{name}</h5>
-                    <p class="card-text">{ageDuration}</p>
-                    BDT {edit ? <input onChange={e => setEditedPrice(parseInt(e.target.value))} type="text" defaultValue={editedPrice} /> : editedPrice}
+                    <h5 class="card-title">{vaccine.vaccine?.name}</h5>
+                    <p class="card-text">{vaccine.vaccine?.ageDuration}</p>
+                    <p>BDT {edit ? <input onChange={e => setEditedPrice(parseInt(e.target.value))} type="text" defaultValue={editedPrice} /> : editedPrice}</p>
+                    Stock: {edit ? <input onChange={e => setEditedStock(parseInt(e.target.value))} type="text" defaultValue={editedStock} /> : editedStock}
                 </div>
                 <button onClick={editVaccine} className="bg-warning rounded">{edit ? <>OK</> : <FontAwesomeIcon icon={faEdit} />}</button>
                 <button onClick={deleteVaccine} className="bg-danger rounded"><FontAwesomeIcon icon={faTrashAlt} /></button>

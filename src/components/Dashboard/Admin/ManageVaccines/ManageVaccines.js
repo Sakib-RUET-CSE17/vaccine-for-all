@@ -1,25 +1,42 @@
 import React, { useEffect, useState } from 'react';
+import LocationForm from '../../../Shared/LocationForm/LocationForm';
 import Sidebar from '../../Sidebar/Sidebar';
 import VaccineCard from '../VaccineCard/VaccineCard';
 
 const ManageVaccines = () => {
-    const [vaccines, setVaccines] = useState([])
+    const [vaccinesByUpazilla, setVaccinesByUpazilla] = useState([])
 
-    useEffect(() => {
-        fetch('https://young-citadel-36577.herokuapp.com/vaccines')
+    const [searchInfo, setSearchInfo] = useState({})
+
+    const handleSubmit = (e) => {
+        console.log('submitted', searchInfo)
+
+        fetch('https://young-citadel-36577.herokuapp.com/vaccineByUpazilla', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(searchInfo)
+        })
             .then(res => res.json())
-            .then(data => setVaccines(data))
-    }, [])
+            .then(data => {
+                setVaccinesByUpazilla(data)
+            })
+
+        e.preventDefault()
+    }
+
     return (
         <div className="row">
             <div className="col-md-2">
                 <Sidebar></Sidebar>
             </div>
             <div className="col-md-10">
-                <h1>Manage Vaccines</h1>
+                <h6>Manage Vaccines</h6>
+                <div>
+                <LocationForm handleSubmit={handleSubmit} searchInfo={searchInfo} setSearchInfo={setSearchInfo}></LocationForm>
+                </div>
                 <div class="row row-cols-1 row-cols-md-3 g-4">
                     {
-                        vaccines.map(vaccine => <VaccineCard vaccine={vaccine}></VaccineCard>)
+                        vaccinesByUpazilla.map(vaccineByUpazilla => <VaccineCard vaccineByUpazilla={vaccineByUpazilla}></VaccineCard>)
                     }
                 </div>
             </div>

@@ -18,7 +18,8 @@ const BookingForm = ({ vaccine }) => {
     const orderDetails = {
       name: loggedInUser.name || loggedInUser.displayName,
       email: loggedInUser.email,
-      vaccine: vaccine.name,
+      vaccine: vaccine.vaccine.name,
+      vaccineUpazillaRelationId:vaccine._id,
       bookingData,
       paymentId,
       orderTime: new Date(),
@@ -32,7 +33,16 @@ const BookingForm = ({ vaccine }) => {
       .then(res => res.json())
       .then(data => {
         if (data) {
-          alert('Registered Successfully')
+          fetch('https://young-citadel-36577.herokuapp.com/updateStock/' + vaccine._id, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ available: vaccine.available - 1 })
+          })
+            .then(res => res.json())
+            .then(data => {
+              alert('Registered Successfully')
+            })
+
         }
       })
   }
@@ -47,8 +57,17 @@ const BookingForm = ({ vaccine }) => {
           <input type="text" defaultValue={loggedInUser.email} {...register('email', { required: true })} placeholder="Your Email" className="form-control" />
           {errors.email && <span className="error">Email is required</span>}
 
-          <h5>{vaccine.name} - BDT {vaccine.price}</h5>
-          <input type="submit" />
+          <input type="text" defaultValue={vaccine.division} {...register("division", { required: true })} placeholder="Your Division" className="form-control" />
+          {errors.name && <span className="error">Division is required</span>}
+
+          <input type="text" defaultValue={vaccine.district} {...register("district", { required: true })} placeholder="Your District" className="form-control" />
+          {errors.name && <span className="error">District is required</span>}
+
+          <input type="text" defaultValue={vaccine.upazilla} {...register("upazilla", { required: true })} placeholder="Your Upazilla" className="form-control" />
+          {errors.name && <span className="error">Upazilla is required</span>}
+
+          <h5>{vaccine.vaccine?.name} - BDT {vaccine.vaccine?.price}</h5>
+          <input type="submit" value="Confirm" />
         </form>
       </div>
       <div style={{ display: bookingData ? 'block' : 'none' }} className="col-md-6">

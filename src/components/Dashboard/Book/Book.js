@@ -9,15 +9,11 @@ const containerStyle = {
     height: '100%',
 };
 
-const Book = () => {
-    const { vaccineId } = useParams()
-    const [vaccine, setVaccine] = useState({})
+const Book = ({ vaccine }) => {
+    // const { vaccineId } = useParams()
+    // const [vaccine, setVaccine] = useState({})
 
-    useEffect(() => {
-        fetch(`https://young-citadel-36577.herokuapp.com/vaccine/${vaccineId}`)
-            .then(res => res.json())
-            .then(data => setVaccine(data))
-    }, [vaccineId])
+    
     return (
         <div style={containerStyle} className="container-fluid row">
             <div className="col">

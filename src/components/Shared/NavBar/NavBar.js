@@ -20,7 +20,7 @@ const NavBar = () => {
                     <li><Link to='/'>Home</Link></li>
                     <li><Link to='/dashboard'>Dashboard</Link></li>
                     <li><Link to='/admin'>Admin</Link></li>
-                    <li><Link to='/offers'>Offers</Link></li>
+                    <li><Link to='/liveChat'>Live Support</Link></li>
                     <li className='text-primary'>{loggedInUser.displayName||loggedInUser.name}</li>
                 </Nav>
                 {
