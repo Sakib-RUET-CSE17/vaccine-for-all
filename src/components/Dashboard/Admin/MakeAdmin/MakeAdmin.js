@@ -8,14 +8,19 @@ const MakeAdmin = () => {
         setNewAdmin({ email: event.target.value })
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
         fetch('https://young-citadel-36577.herokuapp.com/addAdmin', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify(newAdmin)
         })
             .then(res => res.json())
-            .then(data => console.log(data))
+            .then(data => {
+                if (data) {
+                    alert(`${newAdmin.email} has been added as admin`)
+                }
+            })
+        e.preventDefault();
     }
     return (
         <div className="row">
