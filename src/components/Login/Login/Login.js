@@ -1,9 +1,11 @@
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { faPhone } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useContext, useState } from 'react';
+import { Button, Modal } from 'react-bootstrap';
 import { useHistory, useLocation } from 'react-router';
 import { UserContext } from '../../../App';
-import { createUserWithEmailAndPassword, handleGoogleSignIn, initializeLoginFramework, signInWithEmailAndPassword } from './loginManager';
+import { createUserWithEmailAndPassword, handleGoogleSignIn, handlePhoneSignIn, initializeLoginFramework, signInWithEmailAndPassword } from './loginManager';
 
 
 const Login = () => {
@@ -18,6 +20,10 @@ const Login = () => {
         error: '',
         success: false,
     })
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     const history = useHistory()
     const location = useLocation()
@@ -30,6 +36,14 @@ const Login = () => {
             .then(res => {
                 handleResponse(res, true)
             })
+    }
+
+    const phoneSignIn = () => {
+        setShow(true)
+
+        // .then(res => {
+        //     // console.log(res)
+        // })
     }
 
     const handleResponse = (res, redirect) => {
@@ -89,6 +103,19 @@ const Login = () => {
         }
         event.preventDefault()
     }
+
+    const handleModalSubmit = e => {
+        e.preventDefault();
+        handlePhoneSignIn(user)
+            .then(res => {
+                console.log(res)
+                if (res) {
+                    setShow(false);
+                    setLoggedInUser({ ...user, email: user.phoneNumber });
+                    history.replace(from);
+                }
+            })
+    }
     return (
         <div className='container'>
             <div className='row'>
@@ -116,12 +143,40 @@ const Login = () => {
                         <div className="card-body text-center">
                             <h5 className="card-title">Or</h5>
                             <button className='btn border-primary' onClick={googleSignIn}> <FontAwesomeIcon icon={faGoogle} /> Continue with Google</button>
+                            <br />
+                            <Modal show={show} onHide={handleClose}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>{newUser ? 'Register' : 'Sign in'} with Phone</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+
+                                    <h5 className="card-title">{newUser ? 'Create an account' : 'Login'}</h5>
+                                    <form onSubmit={handleModalSubmit} >
+                                        {newUser && <input type="text" className='form-control' name='displayName' onBlur={handleChange} placeholder="Your name" required />}
+                                        <br />
+                                        <input type="text" className='form-control' name="phoneNumber" onChange={handleChange} placeholder='Phone Number' required />
+                                        <br />
+                                        <div id="recaptcha-container"></div>
+                                        <input type="submit" className='btn btn-primary' value={newUser ? 'Register' : 'Sign in'} />
+                                    </form>
+                                    <p>{newUser ? 'Already have an account?' : "Don't have an account?"} <button className='btn btn-secondary' onClick={() => setNewUser(!newUser)}>{newUser ? 'Login' : 'Create an account'}</button></p>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleClose}>
+                                        Close
+                                    </Button>
+                                    <Button variant="primary" onClick={handleClose}>
+                                        Sign In
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
+                            <button className='btn border-primary mt-1' onClick={phoneSignIn}> <FontAwesomeIcon icon={faPhone} /> Continue with Phone</button>
                         </div>
                     </div>
                 </div>
                 <div className='col-md-3'></div>
             </div>
-        </div>
+        </div >
     );
 };
 

@@ -33,7 +33,7 @@ const Footer = () => {
         { name: "Check Up", link: "/checkup" }
     ]
     return (
-        <footer className="footer-area clear-both">
+        <footer className="footer-area clear-both text-primary">
             <div className="container pt-5">
                 <div className="row py-5">
                     <FooterCol key={1} menuTitle={"."} menuItems={noNamed} />

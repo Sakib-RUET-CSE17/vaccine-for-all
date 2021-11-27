@@ -1,25 +1,56 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { UserContext } from '../../../../App';
 import LocationForm from '../../../Shared/LocationForm/LocationForm';
 import Sidebar from '../../Sidebar/Sidebar';
 import VaccineCard from '../VaccineCard/VaccineCard';
 
 const ManageVaccines = () => {
     const [vaccinesByUpazilla, setVaccinesByUpazilla] = useState([])
-
     const [searchInfo, setSearchInfo] = useState({})
+    const [isCentralAdmin, setIsCentralAdmin] = useState(false);
+    const [loggedInUser] = useContext(UserContext);
 
-    const handleSubmit = (e) => {
-        console.log('submitted', searchInfo)
-
+    const handleSearch = (searchData) => {
         fetch('https://young-citadel-36577.herokuapp.com/vaccineByUpazilla', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(searchInfo)
+            body: JSON.stringify(searchData)
         })
             .then(res => res.json())
             .then(data => {
                 setVaccinesByUpazilla(data)
             })
+    }
+
+    useEffect(() => {
+        fetch('https://young-citadel-36577.herokuapp.com/getLocalAdminData', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ email: loggedInUser.email })
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+                if (data) {
+                    setIsCentralAdmin(false);
+                    handleSearch(data);
+                }
+                else {
+                    setIsCentralAdmin(true);
+                }
+            })
+            .catch(error => {
+                setIsCentralAdmin(true);
+            })
+    }, []);
+
+
+
+
+    const handleSubmit = (e) => {
+        console.log('submitted', searchInfo)
+
+        handleSearch(searchInfo)
 
         e.preventDefault()
     }
@@ -31,9 +62,9 @@ const ManageVaccines = () => {
             </div>
             <div className="col-md-10">
                 <h6>Manage Vaccines</h6>
-                <div>
-                <LocationForm handleSubmit={handleSubmit} searchInfo={searchInfo} setSearchInfo={setSearchInfo}></LocationForm>
-                </div>
+                {isCentralAdmin && <div>
+                    <LocationForm handleSubmit={handleSubmit} searchInfo={searchInfo} setSearchInfo={setSearchInfo}></LocationForm>
+                </div>}
                 <div class="row row-cols-1 row-cols-md-3 g-4">
                     {
                         vaccinesByUpazilla.map(vaccineByUpazilla => <VaccineCard vaccineByUpazilla={vaccineByUpazilla}></VaccineCard>)

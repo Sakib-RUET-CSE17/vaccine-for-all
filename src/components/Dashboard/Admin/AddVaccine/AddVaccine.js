@@ -20,6 +20,7 @@ const AddVaccine = () => {
             name: data.name,
             ageDuration: data.ageDuration,
             price: data.price,
+            doses: data.doses,
             imageURL: imageURL
         }
         if (imageURL !== null) {
@@ -29,8 +30,42 @@ const AddVaccine = () => {
                 body: JSON.stringify(vaccinData)
             })
                 .then(res => res.json())
-                .then(data => {
-                    if (data) {
+                .then(vaccineRes => {
+                    if (vaccineRes) {
+                        fetch('https://bdapis.herokuapp.com/api/v1.1/divisions')
+                            .then(res => res.json())
+                            .then(data => {
+                                data.data.map(division => {
+                                    // console.log(division._id)
+                                    fetch('https://bdapis.herokuapp.com/api/v1.1/division/' + division._id)
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            // console.log(division._id, data.data)
+                                            data.data.map(district => {
+                                                // console.log(division._id, district._id,district.upazilla)
+                                                district.upazilla.map(upazilla => {
+                                                    // console.log(division._id, district._id, upazilla)
+
+                                                    fetch('https://young-citadel-36577.herokuapp.com/loadVaccine', {
+                                                        method: 'POST',
+                                                        headers: { 'Content-Type': 'application/json' },
+                                                        body: JSON.stringify({
+                                                            vaccine_id: vaccineRes.insertedId,
+                                                            division: division._id,
+                                                            district: district._id,
+                                                            upazilla,
+                                                            available: 100,
+                                                            served: 0,
+                                                        })
+                                                    })
+                                                        .then(res => res.json())
+                                                        .then(data => console.log(data))
+                                                })
+                                            })
+                                        })
+                                })
+                            })
+                        console.log(vaccineRes)
                         alert('Added Successfully');
                         e.target.reset()
                     } else {
@@ -73,6 +108,8 @@ const AddVaccine = () => {
                     <input className="form-control" placeholder='Age Duration(Ex: 6-18 months)' {...register("ageDuration")} />
                     <br />
                     <input className="form-control" placeholder='Price in BDT(Ex: 800)' {...register("price")} />
+                    <br />
+                    <input className="form-control" placeholder='Doses (Ex: 2)' {...register("doses")} />
                     <br />
 
                     <div className="progress h-100">

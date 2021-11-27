@@ -10,7 +10,7 @@ const BookingForm = ({ vaccine }) => {
   const [bookingData, setBookingData] = useState(null)
 
   const onSubmit = data => {
-    // console.log(data)
+    console.log(data)
     setBookingData(data)
   };
 
@@ -18,10 +18,11 @@ const BookingForm = ({ vaccine }) => {
     const orderDetails = {
       name: loggedInUser.name || loggedInUser.displayName,
       email: loggedInUser.email,
-      vaccine: vaccine.vaccine.name,
-      vaccineUpazillaRelationId:vaccine._id,
+      vaccine: vaccine.vaccine,
+      vaccineUpazillaRelationId: vaccine._id,
       bookingData,
       paymentId,
+      paymentStatus: bookingData.paymentMethod === 'creditCard' ? 'paid' : 'pending',
       orderTime: new Date(),
       status: 'pending'
     }
@@ -33,16 +34,21 @@ const BookingForm = ({ vaccine }) => {
       .then(res => res.json())
       .then(data => {
         if (data) {
-          fetch('https://young-citadel-36577.herokuapp.com/updateStock/' + vaccine._id, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ available: vaccine.available - 1 })
-          })
-            .then(res => res.json())
-            .then(data => {
-              alert('Registered Successfully')
+          if (bookingData.paymentMethod === 'creditCard') {
+            fetch('https://young-citadel-36577.herokuapp.com/updateStock/' + vaccine._id, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
             })
-
+              .then(res => res.json())
+              .then(data => {
+                alert('Registered Successfully')
+              })
+          }
+          else {
+            alert('Payment is pending! Order will be processed after confirmation!')
+            // eslint-disable-next-line no-restricted-globals
+            // location.replace('\dashboard');
+          }
         }
       })
   }
@@ -66,13 +72,20 @@ const BookingForm = ({ vaccine }) => {
           <input type="text" defaultValue={vaccine.upazilla} {...register("upazilla", { required: true })} placeholder="Your Upazilla" className="form-control" />
           {errors.name && <span className="error">Upazilla is required</span>}
 
+          <label className="input-group-text" for="paymentMethod">Payment Method</label>
+          <select className="form-select" id="paymentMethod" {...register("paymentMethod")}>
+            <option value="bKash">bKash</option>
+            <option value="nagad">Nagad</option>
+            <option value="creditCard">Credit Card</option>
+          </select>
+
           <h5>{vaccine.vaccine?.name} - BDT {vaccine.vaccine?.price}</h5>
           <input type="submit" value="Confirm" />
         </form>
       </div>
       <div style={{ display: bookingData ? 'block' : 'none' }} className="col-md-6">
-        <h2>Please Pay BDT {vaccine.price}</h2>
-        <ProcessPayment handlePayment={handlePaymentSuccess}></ProcessPayment>
+        <h2>Please Pay BDT {vaccine.vaccine?.price}</h2>
+        <ProcessPayment handlePayment={handlePaymentSuccess} paymentMethod={bookingData?.paymentMethod}></ProcessPayment>
       </div>
     </div>
   );

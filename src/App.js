@@ -23,6 +23,8 @@ import LoadVaccine from './components/LoadVaccine/LoadVaccine';
 import Services from './components/Home/Services/Services';
 import AllOrder from './components/Dashboard/Admin/OrderList/AllOrder/AllOrder';
 import OrderByLocation from './components/Dashboard/Admin/OrderList/OrderByLocation/OrderByLocation';
+import PaymentList from './components/Dashboard/Admin/Payments/PaymentList';
+import ChatOptions from './components/Support/ChatOptions/ChatOptions';
 
 export const UserContext = createContext();
 
@@ -56,6 +58,9 @@ function App() {
           <PrivateRoute path="/orderList">
             <OrderList></OrderList>
           </PrivateRoute>
+          <PrivateRoute path="/payments">
+            <PaymentList />
+          </PrivateRoute>
           <PrivateRoute path="/allOrder">
             <AllOrder></AllOrder>
           </PrivateRoute>
@@ -73,6 +78,9 @@ function App() {
           </Route>
           <PrivateRoute path="/liveChat">
             <Join></Join>
+          </PrivateRoute>
+          <PrivateRoute path="/liveChatOptions">
+            <ChatOptions />
           </PrivateRoute>
           <Route path="/startChat" component={Chat} />
           <Route path="/loadVaccine" component={LoadVaccine} />

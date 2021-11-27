@@ -23,6 +23,27 @@ export const handleGoogleSignIn = () => {
             return errorMessage
         });
 }
+
+export const handlePhoneSignIn = (user) => {
+    const appVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+    const phoneNumber = user.phoneNumber;
+    return firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+        .then((confirmationResult) => {
+            // SMS sent. Prompt user to type the code from the message, then sign the
+            // user in with confirmationResult.confirm(code).
+            let code = prompt('Enter your code', '');
+            if (code === null)
+                return;
+            return confirmationResult.confirm(code)
+                .then(result => {
+                    if (user.displayName)
+                        updateUserName(user.displayName)
+                    return result;
+                })
+        }).catch((error) => {
+            console.log(error);
+        });
+}
 const storeAuthToken = () => {
     firebase.auth().currentUser.getIdToken(/* forceRefresh */ true)
         .then(function (idToken) {
