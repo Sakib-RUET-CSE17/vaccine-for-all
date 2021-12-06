@@ -25,6 +25,8 @@ import AllOrder from './components/Dashboard/Admin/OrderList/AllOrder/AllOrder';
 import OrderByLocation from './components/Dashboard/Admin/OrderList/OrderByLocation/OrderByLocation';
 import PaymentList from './components/Dashboard/Admin/Payments/PaymentList';
 import ChatOptions from './components/Support/ChatOptions/ChatOptions';
+// import Certificate from './components/Dashboard/BookingCard/Certificate';
+import DownloadCertificate from './components/Dashboard/BookingCard/DownloadCertificate';
 
 export const UserContext = createContext();
 
@@ -42,6 +44,9 @@ function App() {
           </PrivateRoute>
           <PrivateRoute path="/dashboard">
             <BookingList></BookingList>
+          </PrivateRoute>
+          <PrivateRoute path="/certificate/:id">
+            <DownloadCertificate />
           </PrivateRoute>
           <PrivateRoute path="/makeAdmin">
             <MakeAdmin></MakeAdmin>

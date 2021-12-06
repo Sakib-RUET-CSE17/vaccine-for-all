@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const BookingCard = ({ booking }) => {
     const { vaccine, orderTime, status, paymentStatus } = booking;
@@ -21,6 +22,11 @@ const BookingCard = ({ booking }) => {
                 <div class="card-body">
                     <h5 class="card-title">{vaccine?.name ? vaccine?.name : vaccine}</h5>
                     <p class="card-text">Order Time: {orderTime}</p>
+                    {
+                        status === 'done'
+                        &&
+                        <Link to={`/certificate/${booking._id}`} className="card-text btn btn-success">Vaccine Certificate</Link>
+                    }
                 </div>
                 <div class={`card-footer d-flex`}>
                     <span className="border rounded">Payment: <span class={`bg-${paymentStatusBg} px-1 border rounded`}>{paymentStatus || 'pending'}</span></span>
