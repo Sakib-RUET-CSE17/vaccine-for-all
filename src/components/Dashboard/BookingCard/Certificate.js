@@ -11,7 +11,7 @@ const Certificate = ({ download, setDownload }) => {
     const { id } = useParams();
     const [order, setOrder] = useState({});
     useEffect(() => {
-        fetch('http://localhost:5000/order/' + id)
+        fetch('https://young-citadel-36577.herokuapp.com/order/' + id)
             .then(res => res.json())
             .then(data => setOrder(data))
     }, [id])
